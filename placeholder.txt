@@ -1,0 +1,24 @@
+CountryName | Region | City | Postal Code | Lat, Long | Time Clicked
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59801    | 46.8563,-114.0252    | 2024/06/23
+US    | Montana    | Missoula    | 59806    | 46.8721,-113.9940    | 2024/06/24
+US    | Montana    | Missoula    | 59806    | 46.8721,-113.9940    | 2024/06/25
+US    | Montana    | Missoula    | 59806    | 46.8721,-113.9940    | 2024/06/25
+US    | Montana    | Missoula    | 59806    | 46.8721,-113.9940    | 2024/06/25
