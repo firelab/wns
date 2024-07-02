@@ -116,7 +116,7 @@
     data: {
         labels: dateObjects, // Assuming these are your Date objects
         datasets: [{
-            label: 'Total Ninja Users',
+            label: 'Total Ninja GUI Runs',
             data: totals1, // Assuming this contains corresponding data points
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
             borderColor: 'rgba(255, 99, 132, 1)',
@@ -159,8 +159,7 @@
             max: maximum // Set max date object
         },
         y: {
-            min: 0 // Minimum value on the y-axis
-            // Add other y-axis configuration as needed
+            min: 0 
         }
     }
     }
@@ -173,4 +172,3 @@
 Download Text File of Stats</a>
 </body>
 </html>
-

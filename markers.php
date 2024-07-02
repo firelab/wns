@@ -48,6 +48,10 @@ echo "</td>";
 echo "<td>";
   echo "Latitude, Longitude";
 echo "</td>";
+
+echo "<td>";
+  echo "Organization";
+echo "</td>";
 echo "<td>";
   echo "Time";
 echo "</td>";
@@ -56,9 +60,14 @@ echo "<td>";
   echo "Times Clicked Between Selected Period";
 echo "</td>";
   echo "</tr>"; 
+
+  
   
 $x = 0;
 $searchtd = "Total Logs"; 
+
+
+
 
 while ($row = $result->fetchArray(SQLITE3_ASSOC)) { 
    $markerszoom[] = $row['lat']; 
@@ -86,6 +95,8 @@ if (strtolower(trim($row['postalcode']))  == strtolower(trim($_POST['search'])))
      echo  "<td>{$row['city']}</td>"; 
     echo  "<td>{$row['postalcode']}</td>";
     echo  "<td>{$row['lat']}</td>";
+
+    echo  "<td>{$row['organization']}</td>";
     echo  "<td>{$row['time']}</td>";
     echo "<td>";
     echo  $row['timesclicked'];
@@ -98,7 +109,7 @@ if (strtolower(trim($row['postalcode']))  == strtolower(trim($_POST['search'])))
 echo "</div>";
 
 
-$smtm4 = $db->prepare('SELECT countryname, region, city, postalcode, lat, time, timesclicked FROM locations');
+$smtm4 = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time, timesclicked FROM locations');
 $result2 = $smtm4->execute();
 
 while ($row1 = $result2->fetchArray(SQLITE3_ASSOC)) { 
@@ -117,6 +128,28 @@ if (isset($_POST['year']) && !empty($_POST['year']) || isset($_POST['month']) &&
 echo "</div>"; 
 
 echo '<div class="stats">';
+
+$query1 = "SELECT * FROM windowsorlinux";
+$result1 = $db->query($query1);
+
+// Fetch the first row (assuming there's only one row based on your usage)
+$row1 = $result1->fetchArray(SQLITE3_ASSOC);
+
+// Output total Windows users
+if ($row1) {
+  echo "Total Windows Users: " . $row1['windowstot'] . "<br>";
+
+}
+
+// Fetch the next row (if there are multiple rows, but in your case, fetching again is unnecessary)
+$result2 = $db->query($query1);
+$row2 = $result2->fetchArray(SQLITE3_ASSOC);
+
+// Output total Linux users
+if ($row2) {
+  echo "Total Linux Users: " . $row2['linuxtot'] . "<br>";
+
+}
 echo "<ul><li>$searchtd (since 2024 June 21): $x</li></ul>"; 
 echo "</div>";     
 
@@ -223,10 +256,7 @@ $dbfile = '/var/www/html/sqlitetest/db.sqlite';
             }
 
             $query = $query . ") BETWEEN :start_value AND :end_value";
-            echo $query; 
-            echo $start_value;
-            echo $end_value;
-
+          
 
           }
 
@@ -235,6 +265,7 @@ $dbfile = '/var/www/html/sqlitetest/db.sqlite';
                 WHERE countryname LIKE :searchTerm
                    OR region LIKE :searchTerm
                    OR city LIKE :searchTerm
+                    OR organization LIKE :searchTerm
                    OR postalcode LIKE :searchTerm";
                }
                
@@ -244,7 +275,8 @@ $dbfile = '/var/www/html/sqlitetest/db.sqlite';
 
                 $smtm->bindValue(':start_value', $start_value, SQLITE3_INTEGER);
                 $smtm->bindValue(':end_value', $end_value, SQLITE3_INTEGER);
- 
+
+                
                } 
                if ($bool1) {
 
@@ -291,12 +323,14 @@ if(isset($_GET['time'])) {
 $client_ip = $_SERVER['REMOTE_ADDR'];
 
 $new_key = $client_ip;
+$linuxw =   $_SERVER['HTTP_USER_AGENT'];
 
 $query = "CREATE TABLE IF NOT EXISTS locations(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     countryname TEXT NOT NULL,
     region TEXT NOT NULL, 
     city TEXT NOT NULL, 
+    organization TEXT NOT NULL,
     postalcode TEXT NOT NULL, 
     lat TEXT NOT NULL, 
     time TEXT NOT NULL,
@@ -318,55 +352,35 @@ $query = "CREATE TABLE IF NOT EXISTS totals(
 
 $db->exec($query);
 
+$query = "CREATE TABLE IF NOT EXISTS windowsorlinux (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  windowstot INTEGER NOT NULL DEFAULT 0,
+  linuxtot INTEGER NOT NULL DEFAULT 0
+)";
 
- 
+// Create the table if it doesn't exist
+$db->exec($query);
+
+// Query to check if there are any rows in the table
+$queryCheck = "SELECT * FROM windowsorlinux";
+$result = $db->query($queryCheck);
+
+// Fetch the first row (if any)
+$row = $result->fetchArray(SQLITE3_ASSOC);
+
+if (!$row) {
+    // No rows exist, so insert initial values
+    $stmtInsert = $db->prepare('INSERT INTO windowsorlinux (windowstot, linuxtot) VALUES (0, 0)');
+    $stmtInsert->execute();
+    $stmtInsert->close();
+} 
    $IPAD = $client_ip;
 
   
-   $time1 = date('Y/m/d');
+   $time1 = "2024/06/08";
 
 
 $url = "https://ipinfo.io/$IPAD?token=c1281616449b0c";
-
-$ch = curl_init();
-
-curl_setopt($ch, CURLOPT_URL, $url);
-
-
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-
-
-$response = curl_exec($ch);
-
-
-
-
-curl_close($ch);
-
-   $decoded_json = json_decode($response); 
- 
-   $countryname = $decoded_json->country; 
-  $lat = $decoded_json->loc;
-  $regname = $decoded_json->region;
-  $postalcode = $decoded_json->postal;
-   $city = $decoded_json->city;
-   
-  $appendVa = fopen("/var/www/html/sqlitetest/placeholder.txt","a");
-  fwrite($appendVa, $countryname);
- fwrite($appendVa, "    | ");
-fwrite($appendVa, $regname);
-fwrite($appendVa, "    | ");
-fwrite($appendVa, $city);
-fwrite($appendVa, "    | ");
-fwrite($appendVa, $postalcode);
-fwrite($appendVa, "    | ");
-fwrite($appendVa, $lat);
-fwrite($appendVa, "    | ");
-fwrite($appendVa, $time1);
-  fwrite($appendVa, "\n");
-  fclose($appendVa);
-
 
 
 // SQL query to check if the value exists
@@ -392,12 +406,99 @@ $smtm1 -> close();
 } 
 
 else {
+  
+$ch = curl_init();
 
-      $smtm2 = $db->prepare('INSERT INTO locations (countryname, region, city, postalcode, lat, time, ip, timesclicked) VALUES (:countryname, :region, :city, :postalcode, :lat, :time, :ip, :timesclicked)');
+curl_setopt($ch, CURLOPT_URL, $url);
+
+
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+
+
+$response = curl_exec($ch);
+
+
+
+
+curl_close($ch);
+
+   $decoded_json = json_decode($response); 
+ 
+   $countryname = isset($decoded_json->country) ? $decoded_json->country : ""; 
+  $lat = isset($decoded_json->loc) ? $decoded_json->loc : "";
+  $regname = isset($decoded_json->region) ? $decoded_json->region : "";
+  $postalcode = isset($decoded_json->postal) ? $decoded_json->postal : "";
+   $city = isset($decoded_json->city) ? $decoded_json->city : "";
+   $org = isset($decoded_json->org) ? $decoded_json->org : "";
+   echo $org;  
+   $appendVa = fopen("/var/www/html/sqlitetest/placeholder.txt","a");
+  fwrite($appendVa, $countryname);
+ fwrite($appendVa, "    | ");
+fwrite($appendVa, $regname);
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $city);
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $org);
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $postalcode);
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $lat);
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $time1);
+  fwrite($appendVa, "\n");
+  fclose($appendVa);
+
+
+
+
+ if (strpos(strtolower($linuxw), 'linux') !== false) {
+
+
+  // Fetch current linuxtot value
+  $querylinux = "SELECT linuxtot FROM windowsorlinux";
+  $currentLinuxTot = $db->querySingle($querylinux);
+
+
+  if ($currentLinuxTot !== false) {
+      // Increment linuxtot by 1
+      $newLinuxTot = $currentLinuxTot + 1;
+
+
+      // Update linuxtot in windowsorlinux table
+      $stmt = $db->prepare('UPDATE windowsorlinux SET linuxtot = :newLinuxTot');
+      $stmt->bindValue(':newLinuxTot', $newLinuxTot, SQLITE3_INTEGER);
+      $stmt->execute();
+      $stmt->close();
+  }
+}
+if (strpos(strtolower($linuxw), 'windows') !== false) {
+// Fetch current linuxtot value
+$querywindows = "SELECT windowstot FROM windowsorlinux";
+$currentWindowsTot = $db->querySingle($querywindows);
+
+
+if ($currentWindowsTot !== false) {
+    // Increment linuxtot by 1
+    $newWindowsTot = $currentWindowsTot + 1;
+
+
+    // Update linuxtot in windowsorlinux table
+    $stmt = $db->prepare('UPDATE windowsorlinux SET windowstot = :newWindowsTot');
+    $stmt->bindValue(':newWindowsTot', $newWindowsTot, SQLITE3_INTEGER);
+    $stmt->execute();
+    $stmt->close();
+
+
+}
+}
+
+
+      $smtm2 = $db->prepare('INSERT INTO locations (countryname, region, city, organization, postalcode, lat, time, ip, timesclicked) VALUES (:countryname, :region, :city, :organization, :postalcode, :lat, :time, :ip, :timesclicked)');
       $smtm2->bindValue(':countryname', $countryname, SQLITE3_TEXT);
       $smtm2->bindValue(':region', $regname, SQLITE3_TEXT);
       $smtm2->bindValue(':city', $city, SQLITE3_TEXT);
-
+      $smtm2->bindValue(':organization', $org, SQLITE3_TEXT);
  $smtm2->bindValue(':postalcode', $postalcode, SQLITE3_TEXT);
  $smtm2->bindValue(':lat', $lat, SQLITE3_TEXT);
  $smtm2->bindValue(':time', $time1, SQLITE3_TEXT);
@@ -447,7 +548,7 @@ else {
 
 }
 
-$smtm = $db->prepare('SELECT countryname, region, city, postalcode, lat, time, timesclicked FROM locations');
+$smtm = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time, timesclicked FROM locations');
 
 
 makedisplay($smtm, $db); 
