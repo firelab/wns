@@ -377,7 +377,7 @@ if (!$row) {
    $IPAD = $client_ip;
 
   
-   $time1 = "2024/06/08";
+   $time1 = date('Y/m/d');
 
 
 $url = "https://ipinfo.io/$IPAD?token=c1281616449b0c";

@@ -159,7 +159,8 @@
             max: maximum // Set max date object
         },
         y: {
-            min: 0 
+            min: 0 // Minimum value on the y-axis
+            // Add other y-axis configuration as needed
         }
     }
     }

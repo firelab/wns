@@ -1,2 +1,0 @@
-US    | Montana    | Missoula    | 59806    | 46.8721,-113.9940    | 2024/07/02
-US    | Montana    | Missoula    | AS3807 University of Montana    | 59806    | 46.8721,-113.9940    | 2024/07/02
