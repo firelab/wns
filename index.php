@@ -66,16 +66,19 @@
 <br>
 <?php include "markers.php"; ?>
 <script>
-    
     document.addEventListener('DOMContentLoaded', (event) => {
       var totals = <?php echo $totalsJson; ?>;
       var totals1 = <?php echo $totals1Json; ?>;
-      console.log(totals); 
+
+      var totals2 = <?php echo $totals2Json; ?>;
+
+      var totals3 = <?php echo $totals3Json; ?>;
+    
         var markers = <?php echo $markersJson; ?>;
         var markerszoom1 = <?php echo $markerszoomJson; ?>;
         var timeint = <?php echo $timeintJson; ?>;
         var timeint1 = <?php echo $timeintJson1; ?>;
-        console.log(markerszoom1); 
+
      if (markerszoom1.length === 0) {
         var map = L.map('map').setView([markers[0]['lat'].split(',')[0], markers[0]['lat'].split(',')[1]], 15);
 
@@ -84,15 +87,14 @@
                 var map = L.map('map').setView([markerszoom1[0].split(',')[0], markerszoom1[0].split(',')[1]], 15);
 
             }
-
+            
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         markers.forEach(function(marker) { 
-
         var popupContent = '<b>Marker Information</b><br>' +
                            'Latitude: ' + marker['lat'].split(',')[0] + '<br>' +
-                           'Longitude: ' + marker['lat'].split(',')[1]  + '<br>' + "Times Clicked: " + marker['timesclicked']; 
+                           'Longitude: ' + marker['lat'].split(',')[1]  + '<br>' + "Total WindNinja Runs: " + marker['total']; 
             if (marker) {
                 L.marker(marker['lat'].split(',')).bindPopup(popupContent).addTo(map);
             }
@@ -101,8 +103,7 @@
         var dateObjects = totals.map(dateStr => new Date(dateStr));
         var maximum = dateObjects[dateObjects.length - 2]; 
         var minimum = dateObjects[dateObjects.length - 5]; 
-       console.log(timeint);
-       console.log(timeint1);
+       
 
         if (timeint != "") { 
             minimum =new Date(timeint);
@@ -115,13 +116,29 @@
     type: 'line',
     data: {
         labels: dateObjects, // Assuming these are your Date objects
-        datasets: [{
-            label: 'Total Ninja GUI Runs',
+        datasets: [
+        {
+            label: 'Total Ninja CLI Runs',
             data: totals1, // Assuming this contains corresponding data points
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 1
-        }]
+        },
+        {
+            label: 'Total Ninja GUI Runs',
+            data: totals2, // Assuming this contains corresponding data points
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Total Ninja Runs',
+            data: totals3, // Assuming this contains corresponding data points
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }
+    ]
     },
     options: {
         responsive: true,
@@ -150,7 +167,7 @@
             type: 'time', // Use time scale for dates
             time: {
                 parser: 'yyyy/mm/dd', // Specify the date format
-                unit: 'week', // Display ticks by day
+                unit: 'week', // Display ticks by week
                 tooltipFormat: 'll', // Display format in tooltip (e.g., Aug 31, 2023)
                 adapter: Chart._adapters._date,
                

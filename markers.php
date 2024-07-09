@@ -8,15 +8,15 @@ $totals = [];
 
 $totals1 = [];
 
+$totals2 = [];
+
+$totals3 = [];
+
 ### DISPLAY
 $timeint = ""; 
 $timeint1 = "";
 
-
-
-
-
-
+## generate display 
 function makedisplay($smtm, $db) {
   global $markerszoom;
 
@@ -29,11 +29,10 @@ $result = $smtm->execute();
 
 echo '<div class="scroll">';
   echo "<table>";
-
 echo "<tr>";
   echo "<td>";
-  echo "Country Name";
-echo "</td>";
+  echo "Country Name"; 
+  echo "</td>";
   echo "<td>";
   echo "Region";
 echo "</td>";
@@ -45,9 +44,6 @@ echo "</td>";
 echo "</td>";
 
 
-echo "<td>";
-  echo "Latitude, Longitude";
-echo "</td>";
 
 echo "<td>";
   echo "Organization";
@@ -57,16 +53,20 @@ echo "<td>";
 echo "</td>";
 
 echo "<td>";
-  echo "Times Clicked Between Selected Period";
+  echo "Total CLI Runs";
+echo "</td>";
+
+echo "<td>";
+  echo "Total GUI Runs";
+echo "</td>";
+
+echo "<td>";
+  echo "Total Runs";
 echo "</td>";
   echo "</tr>"; 
-
-  
   
 $x = 0;
 $searchtd = "Total Logs"; 
-
-
 
 
 while ($row = $result->fetchArray(SQLITE3_ASSOC)) { 
@@ -94,12 +94,16 @@ if (strtolower(trim($row['postalcode']))  == strtolower(trim($_POST['search'])))
     echo  "<td>{$row['region']}</td>";
      echo  "<td>{$row['city']}</td>"; 
     echo  "<td>{$row['postalcode']}</td>";
-    echo  "<td>{$row['lat']}</td>";
-
     echo  "<td>{$row['organization']}</td>";
     echo  "<td>{$row['time']}</td>";
     echo "<td>";
-    echo  $row['timesclicked'];
+    echo  $row['totalcliruns'];
+    echo "</td>";
+    echo "<td>";
+    echo  $row['totalguiruns'];
+    echo "</td>";
+    echo "<td>";
+    echo  $row['total'];
     echo "</td>";
 
       echo "</tr>";
@@ -108,8 +112,8 @@ if (strtolower(trim($row['postalcode']))  == strtolower(trim($_POST['search'])))
 
 echo "</div>";
 
-
-$smtm4 = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time, timesclicked FROM locations');
+##### Create markers 
+$smtm4 = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time, total, totalcliruns, totalguiruns FROM locations');
 $result2 = $smtm4->execute();
 
 while ($row1 = $result2->fetchArray(SQLITE3_ASSOC)) { 
@@ -129,6 +133,8 @@ echo "</div>";
 
 echo '<div class="stats">';
 
+
+
 $query1 = "SELECT * FROM windowsorlinux";
 $result1 = $db->query($query1);
 
@@ -137,19 +143,10 @@ $row1 = $result1->fetchArray(SQLITE3_ASSOC);
 
 // Output total Windows users
 if ($row1) {
-  echo "Total Windows Users: " . $row1['windowstot'] . "<br>";
+  //echo "Total Windows Users: " . $row1['windowstot'] . "<br>";
 
 }
 
-// Fetch the next row (if there are multiple rows, but in your case, fetching again is unnecessary)
-$result2 = $db->query($query1);
-$row2 = $result2->fetchArray(SQLITE3_ASSOC);
-
-// Output total Linux users
-if ($row2) {
-  echo "Total Linux Users: " . $row2['linuxtot'] . "<br>";
-
-}
 echo "<ul><li>$searchtd (since 2024 June 21): $x</li></ul>"; 
 echo "</div>";     
 
@@ -161,6 +158,8 @@ $db -> close();
 
 
 ## POST 
+
+
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -314,16 +313,22 @@ makedisplay($smtm, $db);
 
 
 else {
+
 $dbfile = '/var/www/html/sqlitetest/db.sqlite';
 
 $db = new SQLite3($dbfile);  
 
 
-if(isset($_GET['time'])) {
+if(isset($_GET['time']) && isset($_GET['runtype']) &&!empty($_GET['runtype'])) {
 $client_ip = $_SERVER['REMOTE_ADDR'];
 
+
+// Log the output to a file (append mode)
+    
 $new_key = $client_ip;
-$linuxw =   $_SERVER['HTTP_USER_AGENT'];
+$linuxw =   "linux";
+
+
 
 $query = "CREATE TABLE IF NOT EXISTS locations(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -335,7 +340,9 @@ $query = "CREATE TABLE IF NOT EXISTS locations(
     lat TEXT NOT NULL, 
     time TEXT NOT NULL,
     ip TEXT NOT NULL,
-    timesclicked INTEGER NOT NULL
+    totalcliruns INTEGER NOT NULL, 
+    totalguiruns INTEGER NOT NULL,
+    total INTEGER NOT NULL
 )";
 
 
@@ -344,10 +351,10 @@ $db->exec($query);
 $query = "CREATE TABLE IF NOT EXISTS totals(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time TEXT NOT NULL,
-    timesclicked INTEGER NOT NULL
+    totalcliruns INTEGER NOT NULL, 
+    totalguiruns INTEGER NOT NULL, 
+    total INTEGER NOT NULL
 )";
-
-
 
 
 $db->exec($query);
@@ -362,6 +369,7 @@ $query = "CREATE TABLE IF NOT EXISTS windowsorlinux (
 $db->exec($query);
 
 // Query to check if there are any rows in the table
+
 $queryCheck = "SELECT * FROM windowsorlinux";
 $result = $db->query($queryCheck);
 
@@ -377,7 +385,7 @@ if (!$row) {
    $IPAD = $client_ip;
 
   
-   $time1 = date('Y/m/d');
+   $time1 = "2024/07/01";
 
 
 $url = "https://ipinfo.io/$IPAD?token=c1281616449b0c";
@@ -396,13 +404,31 @@ $timesclicked = 1;
 $smtm3->close();
 
 if ($row) {
-  $smtm1 = $db->prepare('UPDATE locations SET timesclicked = :timesnew WHERE id = :id');
+  if ($_GET['runtype'] == "gui") {
+    $smtm1 = $db->prepare('UPDATE locations SET totalguiruns = :timesnew WHERE id = :id');
+    $smtm1->bindValue(':id', $row['id'], SQLITE3_INTEGER); // Bind location ID parameter
+    $smtm1->bindValue(':timesnew', $row['totalguiruns'] + 1, SQLITE3_INTEGER); // Bind location ID parameter
+    $smtm1-> execute();
+  $smtm1 -> close();
+  }
+
+  if ($_GET['runtype'] == "cli") {
+    $smtm1 = $db->prepare('UPDATE locations SET totalcliruns = :timesnew WHERE id = :id');
+    $smtm1->bindValue(':id', $row['id'], SQLITE3_INTEGER); // Bind location ID parameter
+    $smtm1->bindValue(':timesnew', $row['totalcliruns'] + 1, SQLITE3_INTEGER); // Bind location ID parameter
+    $smtm1-> execute();
+  
+  $smtm1 -> close();
+  }
+
+  $smtm1 = $db->prepare('UPDATE locations SET total = :timesnew WHERE id = :id');
   $smtm1->bindValue(':id', $row['id'], SQLITE3_INTEGER); // Bind location ID parameter
-  $smtm1->bindValue(':timesnew', $row['timesclicked'] + 1, SQLITE3_INTEGER); // Bind location ID parameter
+  $smtm1->bindValue(':timesnew', $row['total'] + 1, SQLITE3_INTEGER); // Bind location ID parameter
   $smtm1-> execute();
 
 $smtm1 -> close();
 
+  
 } 
 
 else {
@@ -419,8 +445,6 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
 
 
-
-
 curl_close($ch);
 
    $decoded_json = json_decode($response); 
@@ -431,7 +455,6 @@ curl_close($ch);
   $postalcode = isset($decoded_json->postal) ? $decoded_json->postal : "";
    $city = isset($decoded_json->city) ? $decoded_json->city : "";
    $org = isset($decoded_json->org) ? $decoded_json->org : "";
-   echo $org;  
    $appendVa = fopen("/var/www/html/sqlitetest/placeholder.txt","a");
   fwrite($appendVa, $countryname);
  fwrite($appendVa, "    | ");
@@ -446,14 +469,20 @@ fwrite($appendVa, "    | ");
 fwrite($appendVa, $lat);
 fwrite($appendVa, "    | ");
 fwrite($appendVa, $time1);
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $row['totalcliruns'] );
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $row['totalguiruns'] );
+fwrite($appendVa, "    | ");
+fwrite($appendVa, $row['total'] );
   fwrite($appendVa, "\n");
   fclose($appendVa);
 
 
 
 
+/*
  if (strpos(strtolower($linuxw), 'linux') !== false) {
-
 
   // Fetch current linuxtot value
   $querylinux = "SELECT linuxtot FROM windowsorlinux";
@@ -492,9 +521,9 @@ if ($currentWindowsTot !== false) {
 
 }
 }
+*/
 
-
-      $smtm2 = $db->prepare('INSERT INTO locations (countryname, region, city, organization, postalcode, lat, time, ip, timesclicked) VALUES (:countryname, :region, :city, :organization, :postalcode, :lat, :time, :ip, :timesclicked)');
+      $smtm2 = $db->prepare('INSERT INTO locations (countryname, region, city, organization, postalcode, lat, time, ip, total, totalcliruns, totalguiruns) VALUES (:countryname, :region, :city, :organization, :postalcode, :lat, :time, :ip,  :total, :totalcliruns, :totalguiruns)');
       $smtm2->bindValue(':countryname', $countryname, SQLITE3_TEXT);
       $smtm2->bindValue(':region', $regname, SQLITE3_TEXT);
       $smtm2->bindValue(':city', $city, SQLITE3_TEXT);
@@ -503,14 +532,22 @@ if ($currentWindowsTot !== false) {
  $smtm2->bindValue(':lat', $lat, SQLITE3_TEXT);
  $smtm2->bindValue(':time', $time1, SQLITE3_TEXT);
  $smtm2->bindValue(':ip', $client_ip, SQLITE3_TEXT);
- $smtm2->bindValue(':timesclicked', $timesclicked, SQLITE3_INTEGER);
+ $smtm2->bindValue(':total', 1, SQLITE3_INTEGER);
+ if ($_GET['runtype'] == "gui") {
+
+  $smtm2->bindValue(':totalcliruns', 0, SQLITE3_INTEGER);
+  $smtm2->bindValue(':totalguiruns',1, SQLITE3_INTEGER);
+ }
+ if ($_GET['runtype'] == "cli") {
+
+ $smtm2->bindValue(':totalcliruns', 1, SQLITE3_INTEGER);
+ $smtm2->bindValue(':totalguiruns', 0, SQLITE3_INTEGER);
+ }
 
  $smtm2-> execute();
  $smtm2 -> close();
 
 }
-
-
 
 
 $query = "SELECT * FROM totals WHERE time = :times2";
@@ -524,31 +561,54 @@ $timesclicked = 1;
 $smtm5->close();
 
 if ($row) {
-  $smtm6 = $db->prepare('UPDATE totals SET timesclicked = :timesnew WHERE id = :id');
+  $smtm6 = $db->prepare('UPDATE totals SET total = :timesnew WHERE id = :id');
   $smtm6->bindValue(':id', $row['id'], SQLITE3_INTEGER);
-  $smtm6->bindValue(':timesnew', $row['timesclicked'] + 1, SQLITE3_INTEGER); 
+  $smtm6->bindValue(':timesnew', $row['total'] + 1, SQLITE3_INTEGER); 
   $smtm6-> execute();
 
 $smtm6 -> close();
+if ($_GET['runtype'] == "cli") {
+
+  $smtm6 = $db->prepare('UPDATE totals SET totalcliruns = :timesnew WHERE id = :id');
+  $smtm6->bindValue(':id', $row['id'], SQLITE3_INTEGER);
+  $smtm6->bindValue(':timesnew', $row['totalcliruns'] + 1, SQLITE3_INTEGER); 
+  $smtm6-> execute();
+  
+  $smtm6 -> close();
+}
+if ($_GET['runtype'] == "gui") {
+  $smtm6 = $db->prepare('UPDATE totals SET totalguiruns = :timesnew WHERE id = :id');
+  $smtm6->bindValue(':id', $row['id'], SQLITE3_INTEGER);
+  $smtm6->bindValue(':timesnew', $row['totalguiruns'] + 1, SQLITE3_INTEGER); 
+  $smtm6-> execute();
+  $smtm6 -> close();
+}
 
 } 
 
 else {
 
-      $smtm7 = $db->prepare('INSERT INTO totals (time, timesclicked) VALUES (:time1, :timesclicked)');
+      $smtm7 = $db->prepare('INSERT INTO totals (time, totalcliruns, totalguiruns, total) VALUES (:time1, :timesclicked, :timesclicked1, :timesclicked2)');
  $smtm7->bindValue(':time1', $time1, SQLITE3_TEXT);
- $smtm7->bindValue(':timesclicked', $timesclicked, SQLITE3_INTEGER);
+ if ($_GET['runtype'] == "cli") {
+  $smtm7->bindValue(':timesclicked', 1, SQLITE3_INTEGER);
+  $smtm7->bindValue(':timesclicked1', 0, SQLITE3_INTEGER);
+ }
+ if ($_GET['runtype'] == "gui") {
+  $smtm7->bindValue(':timesclicked', 0, SQLITE3_INTEGER);
+  $smtm7->bindValue(':timesclicked1', 1, SQLITE3_INTEGER);
+ }
+
+ $smtm7->bindValue(':timesclicked2', 1, SQLITE3_INTEGER);
 
  $smtm7-> execute();
  $smtm7 -> close();
 
 }
 
-
-
 }
 
-$smtm = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time, timesclicked FROM locations');
+$smtm = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time,  totalcliruns, totalguiruns, total FROM locations');
 
 
 makedisplay($smtm, $db); 
@@ -572,17 +632,24 @@ makedisplay($smtm, $db);
   while ($row = $result->fetchArray(SQLITE3_ASSOC)) { 
   
       $totals[] = $row['time'];
-      $totals1[] = $row['timesclicked'];
-  
+      $totals3[] = $row['total'];
+      $totals1[] = $row['totalcliruns'];
+      $totals2[] = $row['totalguiruns'];
+
     }
   
-  
-    $smtm8 -> close();
+  $smtm8 -> close();
   
 $totalsJson = json_encode($totals);
 $totals1Json = json_encode($totals1);
+
+$totals2Json = json_encode($totals2);
+
+$totals3Json = json_encode($totals3);
+
 $timeintJson = json_encode($timeint);
 $timeintJson1 = json_encode($timeint1);
+
 $markerszoomJson = json_encode($markerszoom);
 
 $markersJson = json_encode($markers);
