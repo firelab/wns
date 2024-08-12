@@ -17,7 +17,7 @@ To edit SSH into /etc/var/www/html/sqlitetest
 
 Current issues needing fixing - sometimes date time only sets the year, some IPs are unique each time? maybe an issue with the api
 
-
+ ++++ I THINK the issue is I should change the IP fetching code because it does not seem to be the best way right now
 
 
 
