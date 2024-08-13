@@ -644,7 +644,7 @@ $totalsJson = json_encode($totals);
 $totals1Json = json_encode($totals1);
 
 $totals2Json = json_encode($totals2);
-
+echo "hey"; 
 $totals3Json = json_encode($totals3);
 
 $timeintJson = json_encode($timeint);
