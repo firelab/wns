@@ -19,6 +19,8 @@ Current issues needing fixing - sometimes date time only sets the year, some IPs
 
  ++++ I THINK the issue is I should change the IP fetching code because it does not seem to be the best way right now
 
+ If there's any issues where there are duplicated run values in the table for one lat long, you can maybe just add them up to see how much that user totaled.
+
 
 
 /******************************************************************************
