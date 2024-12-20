@@ -13,14 +13,21 @@ PHP scripts query a Sqlite db with user info stored and this info gets displayed
 
 ###
 How it works (easy code): 
-1. In markers.php the code is separated into handling the get request when a user loads the gui/cli and handling the post request when a user tries to search for data within a certain timeframe (using that big search bar at the top of the stats page). 
+
 
 Schemas: 
+|||
 The schemas defined in the code are a "locations" table which defines a table that contains information for a unique IP. 
 Given IP1 - example country, example lat, example long, etc 
 IP2 - example country, example lat, example long, etc 
 
 The "totals" table which defines the primary key as a date (12/12/2024) and then the total gui/cli runs + total runs on that given date.
+|||
+
+
+Markers.php
+|||
+1. In markers.php the code is separated into handling the get request when a user loads the gui/cli and handling the post request when a user tries to search for data within a certain timeframe (using that big search bar at the top of the stats page). 
 
 Functionality of the code:
 MakeDisplay() - this displays the rows and columns of data in the table at the bottom of the stats page. 
@@ -28,11 +35,14 @@ Line 165 - 306 - This handles the post request for the website, which occurs whe
 Line 316 - This handles the get request for the website. At Line 406 we detect if there exists a entry in the locations table with the IP given from the user. If there is, we update that entry for that IP. Otherwise we have a unique IP and on line 434, we go through the process of making our request to that IPInfo page to get the information needed to populate the locations table from that IP (so where the country that IP is from, lat, long, etc.). 
 At Line 553 - 6111, we update the total amount of requests made at the date we just got this new user request from. 
 From 619 - the end, we get the entry data from the "totals" table and send it to the other php file (we send some variables from here to index.php)
+|||
 
-In index.php: 
+
+
+index.php: 
+|||
 - You can match the variables set in markers.php up to variables here, and these variables are used to display on a simple chart.js chart which shows the dates, total CLI/GUI runs for each date, etc. 
-
-
+|||
 
 ###
 To edit SSH into /etc/var/www/html/sqlitetest 
