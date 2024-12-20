@@ -33,7 +33,7 @@ Functionality of the code:
 MakeDisplay() - this displays the rows and columns of data in the table at the bottom of the stats page. 
 Line 165 - 306 - This handles the post request for the website, which occurs when a user passes in say a certain date, and queries the "locations" table to get the rows that correspond to what the user searched. At line 301, makedisplay is called with this specific set of data and updates the table at the bottom of the page as such.  
 Line 316 - This handles the get request for the website. At Line 406 we detect if there exists a entry in the locations table with the IP given from the user. If there is, we update that entry for that IP. Otherwise we have a unique IP and on line 434, we go through the process of making our request to that IPInfo page to get the information needed to populate the locations table from that IP (so where the country that IP is from, lat, long, etc.). 
-At Line 553 - 6111, we update the total amount of requests made at the date we just got this new user request from. 
+At Line 553 - 611, we update the total amount of requests made at the date we just got this new user request from. 
 From 619 - the end, we get the entry data from the "totals" table and send it to the other php file (we send some variables from here to index.php)
 |||
 
