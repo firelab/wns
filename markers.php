@@ -27,7 +27,7 @@ $result = $smtm->execute();
 
 // Fetch the result
 
-echo '<div class="scroll">';
+echo '<div class="scroll" style="max-height: 500px; overflow-y: auto;">';
   echo "<table>";
 echo "<tr>";
   echo "<td>";
@@ -163,7 +163,7 @@ $db -> close();
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-$dbfile = '/var/www/html/sqlitetest/db.sqlite';
+$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
 
                $db = new SQLite3($dbfile);
                $start_value = 0; 
@@ -314,7 +314,7 @@ makedisplay($smtm, $db);
 
 else {
 
-$dbfile = '/var/www/html/sqlitetest/db.sqlite';
+$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
 
 $db = new SQLite3($dbfile);  
 
@@ -616,7 +616,7 @@ makedisplay($smtm, $db);
 }
 
 
-  $dbfile = '/var/www/html/sqlitetest/db.sqlite';
+  $dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
 
   $db = new SQLite3($dbfile);  
   
