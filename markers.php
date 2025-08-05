@@ -163,7 +163,7 @@ $db -> close();
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
+$dbfile = '/var/www/html/db.sqlite';
 
                $db = new SQLite3($dbfile);
                $start_value = 0; 
@@ -314,7 +314,7 @@ makedisplay($smtm, $db);
 
 else {
 
-$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
+$dbfile = '/var/www/html/db.sqlite';
 
 $db = new SQLite3($dbfile);  
 
@@ -616,7 +616,7 @@ makedisplay($smtm, $db);
 }
 
 
-  $dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
+  $dbfile = '/var/www/html/db.sqlite';
 
   $db = new SQLite3($dbfile);  
   
@@ -643,8 +643,7 @@ makedisplay($smtm, $db);
 $totalsJson = json_encode($totals);
 $totals1Json = json_encode($totals1);
 
-$totals2Json = json_encode($totals2);
-echo "hey"; 
+$totals2Json = json_encode($totals2); 
 $totals3Json = json_encode($totals3);
 
 $timeintJson = json_encode($timeint);

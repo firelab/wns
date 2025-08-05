@@ -28,7 +28,7 @@
 
 <br>
 
-<div class="BIG">
+<!-- <div class="BIG">
     <form method="post" class="form-horizontal">
         <div class="grouper">
             <label for="search">Search By Country, Region, City, Postal Code (no spaces):</label>
@@ -57,7 +57,7 @@
         </div>            
         <input type="submit" value="Submit">
     </form>
-</div>
+</div> -->
 
 <div class = "flexx">
    <div id="map" style="height: 20vh;"></div>
@@ -67,36 +67,42 @@
 <?php include "markers.php"; ?>
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-      var totals = <?php echo $totalsJson; ?>;
-      var totals1 = <?php echo $totals1Json; ?>;
+        var totals = <?php echo $totalsJson; ?>;
+        var totals1 = <?php echo $totals1Json; ?>;
 
-      var totals2 = <?php echo $totals2Json; ?>;
+        var totals2 = <?php echo $totals2Json; ?>;
 
-      var totals3 = <?php echo $totals3Json; ?>;
-    
+        var totals3 = <?php echo $totals3Json; ?>;
+
         var markers = <?php echo $markersJson; ?>;
         var markerszoom1 = <?php echo $markerszoomJson; ?>;
         var timeint = <?php echo $timeintJson; ?>;
         var timeint1 = <?php echo $timeintJson1; ?>;
 
-     if (markerszoom1.length === 0) {
-        var map = L.map('map').setView([markers[0]['lat'].split(',')[0], markers[0]['lat'].split(',')[1]], 15);
-
-    }
-            else {
-                var map = L.map('map').setView([markerszoom1[0].split(',')[0], markerszoom1[0].split(',')[1]], 15);
-
-            }
+        if (markerszoom1.length === 0) {
+            var map = L.map('map').fitBounds([
+                [24.396308, -125.0],  
+                [49.384358, -66.93457] 
+            ]);
+        } else {
+            // Same for markerszoom1 condition
+            var map = L.map('map').fitBounds([
+                [24.396308, -125.0],
+                [49.384358, -66.93457]
+            ]);
+        }
             
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         markers.forEach(function(marker) { 
-        var popupContent = '<b>Marker Information</b><br>' +
-                           'Latitude: ' + marker['lat'].split(',')[0] + '<br>' +
-                           'Longitude: ' + marker['lat'].split(',')[1]  + '<br>' + "Total WindNinja Runs: " + marker['total']; 
-            if (marker) {
-                L.marker(marker['lat'].split(',')).bindPopup(popupContent).addTo(map);
+            if (marker && marker.lat && marker.lat.split(',').length === 2) {
+                var lat = marker.lat.split(',')[0];
+                var lon = marker.lat.split(',')[1];
+                var popupContent = '<b>Marker Information</b><br>' +
+                                'Latitude: ' + lat + '<br>' +
+                                'Longitude: ' + lon  + '<br>' + "Total WindNinja Runs: " + marker.total; 
+                L.marker([lat, lon]).bindPopup(popupContent).addTo(map);
             }
         });
 
