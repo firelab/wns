@@ -197,6 +197,18 @@
     }
     }
     });
+
+    setTimeout(() => {
+        const maxDate = new Date();
+        const minDate = new Date();
+        minDate.setDate(maxDate.getDate() - 7);
+
+        myChart.zoomScale('x', {
+            min: minDate,
+            max: maxDate
+        });
+    }, 0);
+
     document.getElementById('totalRuns2025Display').textContent = 
     'Total Runs (Year to date): ' + totalRuns2025.toLocaleString();
 
