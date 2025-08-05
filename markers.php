@@ -163,7 +163,7 @@ $db -> close();
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
+$dbfile = '/var/www/html/sqlitetest/db.sqlite';
 
                $db = new SQLite3($dbfile);
                $start_value = 0; 
@@ -314,7 +314,7 @@ makedisplay($smtm, $db);
 
 else {
 
-$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
+$dbfile = '/var/www/html/sqlitetest/db.sqlite';
 
 $db = new SQLite3($dbfile);  
 
@@ -634,7 +634,7 @@ makedisplay($smtm, $db);
 }
 
 
-  $dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
+  $dbfile = '/var/www/html/sqlitetest/db.sqlite';
 
   $db = new SQLite3($dbfile);  
   
@@ -663,7 +663,6 @@ $totalCountriesJson = json_encode($totalCountries);
 $uniqueUsersJson = json_encode($uniqueUsers);
 
 $totalRuns2025Json = json_encode($totalRuns2025);
-
   
 $totalsJson = json_encode($totals);
 $totals1Json = json_encode($totals1);
