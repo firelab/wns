@@ -62,9 +62,10 @@
 <div class = "flexx">
    <div id="map" style="height: 20vh;"></div>
    <canvas id="myChart"  style="width: 15vw;"></canvas>
-    <p id="totalSumDisplay" style="margin-top: 10px;"></p>
+    <p id="totalRuns2025Display" style="margin-top: 10px;"></p>
     <p id="totalUserDisplay" style="margin-top: 10px;"></p>
     <p id="totalCountryDisplay" style="margin-top: 10px;"></p>
+
 </div>
 <br>
 <?php include "markers.php"; ?>
@@ -76,7 +77,6 @@
         var totals2 = <?php echo $totals2Json; ?>;
 
         var totals3 = <?php echo $totals3Json; ?>;
-        var totals3Sum = <?php echo $totals3SumJson; ?>;
 
         var markers = <?php echo $markersJson; ?>;
         var markerszoom1 = <?php echo $markerszoomJson; ?>;
@@ -85,6 +85,8 @@
 
         var totalUnqiueUsers = <?php echo $uniqueUsersJson; ?>;
         var totalCountries = <?php echo $totalCountriesJson; ?>;
+        var totalRuns2025 = <?php echo $totalRuns2025Json; ?>;
+
 
         if (markerszoom1.length === 0) {
             var map = L.map('map').fitBounds([
@@ -195,8 +197,8 @@
     }
     }
     });
-    document.getElementById('totalSumDisplay').textContent = 
-    'Total Ninja Runs: ' + totals3Sum.toLocaleString();
+    document.getElementById('totalRuns2025Display').textContent = 
+    'Total Runs (Year to date): ' + totalRuns2025.toLocaleString();
 
     document.getElementById('totalUserDisplay').textContent = 
     'Total Users: ' + totalUnqiueUsers.toLocaleString();

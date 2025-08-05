@@ -620,6 +620,14 @@ $result = $db->query($query);
 $row = $result->fetchArray(SQLITE3_ASSOC);
 $uniqueUsers = $row['unique_users'];
 
+$query = "
+    SELECT SUM(total) AS total_runs_2025 
+    FROM totals 
+    WHERE substr(time, 1, 4) = '2025'
+";
+$result = $db->query($query);
+$row = $result->fetchArray(SQLITE3_ASSOC);
+$totalRuns2025 = $row['total_runs_2025'] ?? 0;
 
 makedisplay($smtm, $db); 
 
@@ -653,6 +661,9 @@ makedisplay($smtm, $db);
 $totalCountriesJson = json_encode($totalCountries);
 
 $uniqueUsersJson = json_encode($uniqueUsers);
+
+$totalRuns2025Json = json_encode($totalRuns2025);
+
   
 $totalsJson = json_encode($totals);
 $totals1Json = json_encode($totals1);
