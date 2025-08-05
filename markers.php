@@ -147,8 +147,8 @@ if ($row1) {
 
 }
 
-echo "<ul><li>$searchtd (since 2024 June 21): $x</li></ul>"; 
-echo "</div>";     
+##echo "<ul><li>$searchtd: $x</li></ul>"; 
+##echo "</div>";     
 
 $smtm -> close();
 $db -> close();
@@ -163,7 +163,7 @@ $db -> close();
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-$dbfile = '/var/www/html/db.sqlite';
+$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
 
                $db = new SQLite3($dbfile);
                $start_value = 0; 
@@ -314,7 +314,7 @@ makedisplay($smtm, $db);
 
 else {
 
-$dbfile = '/var/www/html/db.sqlite';
+$dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
 
 $db = new SQLite3($dbfile);  
 
@@ -610,13 +610,23 @@ else {
 
 $smtm = $db->prepare('SELECT countryname, region, city, organization, postalcode, lat, time,  totalcliruns, totalguiruns, total FROM locations');
 
+$query = "SELECT COUNT(DISTINCT countryname) AS total_countries FROM locations";
+$result = $db->query($query);
+$row = $result->fetchArray(SQLITE3_ASSOC);
+$totalCountries = $row['total_countries'];
+
+$query = "SELECT COUNT(DISTINCT ip) AS unique_users FROM locations";
+$result = $db->query($query);
+$row = $result->fetchArray(SQLITE3_ASSOC);
+$uniqueUsers = $row['unique_users'];
+
 
 makedisplay($smtm, $db); 
 
 }
 
 
-  $dbfile = '/var/www/html/db.sqlite';
+  $dbfile = '/home/mason/Documents/Git/wns/db.sqlite';
 
   $db = new SQLite3($dbfile);  
   
@@ -639,11 +649,17 @@ makedisplay($smtm, $db);
     }
   
   $smtm8 -> close();
+
+$totalCountriesJson = json_encode($totalCountries);
+
+$uniqueUsersJson = json_encode($uniqueUsers);
   
 $totalsJson = json_encode($totals);
 $totals1Json = json_encode($totals1);
 
 $totals2Json = json_encode($totals2); 
+$totals3Sum = array_sum($totals3);
+$totals3SumJson = json_encode($totals3Sum);
 $totals3Json = json_encode($totals3);
 
 $timeintJson = json_encode($timeint);
