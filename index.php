@@ -179,16 +179,17 @@
         },
     scales: {
         x: {
-            type: 'time', // Use time scale for dates
+            type: 'time',
             time: {
-                parser: 'yyyy/mm/dd', // Specify the date format
-                unit: 'week', // Display ticks by week
-                tooltipFormat: 'll', // Display format in tooltip (e.g., Aug 31, 2023)
-                adapter: Chart._adapters._date,
-               
+                unit: 'day', // Ensures one tick per day (ideal for 7-day window)
+                tooltipFormat: 'll' // e.g., Aug 6, 2025
             },
-            min: minimum, // Set min date object
-            max: maximum // Set max date object
+            ticks: {
+                maxTicksLimit: 7, // One tick per day max
+                autoSkip: false
+            },
+            min: minimum,
+            max: maximum
         },
         y: {
             min: 0 // Minimum value on the y-axis
@@ -207,6 +208,9 @@
             min: minDate,
             max: maxDate
         });
+
+        myChart.zoom(0.999, 'xy');
+
     }, 0);
 
     document.getElementById('totalRuns2025Display').textContent = 
