@@ -202,7 +202,9 @@
     setTimeout(() => {
         const maxDate = new Date();
         const minDate = new Date();
-        minDate.setDate(maxDate.getDate() - 7);
+        minDate.setDate(maxDate.getDate() - 8);
+        maxDate.setDate(maxDate.getDate() - 1);
+
 
         myChart.zoomScale('x', {
             min: minDate,
