@@ -115,7 +115,6 @@
             }
         });
 
-        // Combine & sort data so dates align with dataset values
         let combinedData = totals.map((dateStr, i) => ({
             date: new Date(dateStr),
             cli: totals1[i],
@@ -170,6 +169,9 @@
             responsive: true,
             plugins: {
                 zoom: {
+            limits: {
+                y: { min: 0 }  // Prevent zooming/panning below 0 on y-axis
+            },
                     pan: {
                         enabled: true,
                         mode: 'xy',
@@ -198,7 +200,9 @@
                     max: maximum
                 },
                 y: {
-                    min: 0
+                    type: 'linear',
+                    suggestedMin: 0,  
+                    grace: '5%',  
                 }
             }
         }
