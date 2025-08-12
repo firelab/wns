@@ -115,88 +115,93 @@
             }
         });
 
-        var dateObjects = totals.map(dateStr => new Date(dateStr));
-        var maximum = dateObjects[dateObjects.length - 2]; 
-        var minimum = dateObjects[dateObjects.length - 5]; 
-       
+        // Combine & sort data so dates align with dataset values
+        let combinedData = totals.map((dateStr, i) => ({
+            date: new Date(dateStr),
+            cli: totals1[i],
+            gui: totals2[i],
+            total: totals3[i]
+        }));
+        combinedData.sort((a, b) => a.date - b.date);
 
+        var dateObjects = combinedData.map(d => d.date);
+        var totals1Sorted = combinedData.map(d => d.cli);
+        var totals2Sorted = combinedData.map(d => d.gui);
+        var totals3Sorted = combinedData.map(d => d.total);
+
+        var maximum = dateObjects[dateObjects.length - 2];
+        var minimum = dateObjects[dateObjects.length - 5];
         if (timeint != "") { 
-            minimum =new Date(timeint);
+            minimum = new Date(timeint);
             maximum = new Date(timeint1);
-
-        }
+        }``
       
+ // Chart.js setup
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: dateObjects, // Assuming these are your Date objects
-        datasets: [
-        {
-            label: 'Total Ninja CLI Runs',
-            data: totals1, // Assuming this contains corresponding data points
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-        },
-        {
-            label: 'Total Ninja GUI Runs',
-            data: totals2, // Assuming this contains corresponding data points
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-        },
-        {
-            label: 'Total Ninja Runs',
-            data: totals3, // Assuming this contains corresponding data points
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-        }
-    ]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            
-            zoom: {
-                pan: {
-                    enabled: true, // Enable panning
-                    mode: 'xy', 
-                    speed: 2, // Allow panning in both directions
-                    threshold: 0 // Minimum distance required before panning occurs
+        type: 'line',
+        data: {
+            labels: dateObjects,
+            datasets: [
+                {
+                    label: 'Total Ninja CLI Runs',
+                    data: totals1Sorted,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
                 },
+                {
+                    label: 'Total Ninja GUI Runs',
+                    data: totals2Sorted,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Ninja Runs',
+                    data: totals3Sorted,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
                 zoom: {
-                    wheel: {
-                        enabled: true, // Enable zooming with the mouse wheel
+                    pan: {
+                        enabled: true,
+                        mode: 'xy',
+                        speed: 2,
+                        threshold: 0
                     },
-                    pinch: {
-                        enabled: true // Enable zooming with pinch gestures (e.g., on touch devices)
+                    zoom: {
+                        wheel: { enabled: true },
+                        pinch: { enabled: true },
+                        mode: 'xy'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        tooltipFormat: 'll'
                     },
-                    mode: 'xy', // Allow zooming in both directions (x and y)
+                    ticks: {
+                        maxTicksLimit: 7,
+                        autoSkip: false
+                    },
+                    min: minimum,
+                    max: maximum
+                },
+                y: {
+                    min: 0
                 }
             }
-        },
-    scales: {
-        x: {
-            type: 'time',
-            time: {
-                unit: 'day', // Ensures one tick per day (ideal for 7-day window)
-                tooltipFormat: 'll' // e.g., Aug 6, 2025
-            },
-            ticks: {
-                maxTicksLimit: 7, // One tick per day max
-                autoSkip: false
-            },
-            min: minimum,
-            max: maximum
-        },
-        y: {
-            min: 0 // Minimum value on the y-axis
-            // Add other y-axis configuration as needed
         }
-    }
-    }
     });
 
     setTimeout(() => {
